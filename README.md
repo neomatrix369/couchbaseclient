@@ -3,6 +3,8 @@ couchbaseclient
 
 A couchbase client that allows quick access to the couchbase cluster / node. Send SQL, receive results (JSON), handy for writing scripts and piping results into files.
 
+The couchbase client `cbq` does not accept N1QL queries as parameters and its not straight-forward to pipe the results of these queries run in `cbq`, this utility program attempts to resolve these two limitations.
+
 Build
 -----
 
@@ -34,12 +36,12 @@ Copy the zip artifact from the local machine to one of the jump boxes on AWS wit
 	   
 	cd distribute
 	
-	./runCouchbaseClient.sh "couchBaseHost:[port]"  "bucketName" "sql query"
+	./runCouchbaseClient.sh "couchBaseHost:[port]"  "bucketName" "N1QL query"
 	
 	required parameters:
 		couchBaseHost[:port]   - name or IP address (port number is optional) of the Couchbase cluster / node
     	bucketName             - name of the bucket on the Couchbase cluster / node
-    	sql query              - Couchbase-compliant sql query surrounded by single or double quotes
+    	N1QL query             - Couchbase-compliant N1QL query surrounded by single or double quotes
 	
 	examples:
 		./runCouchbaseClient.sh 192.168.99.100:8091 sapi "select * from sapi limit 5"

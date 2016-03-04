@@ -29,11 +29,11 @@ public class BetterCBQ {
 
   private static String getUsageText() {
     return
-        "usage: couchbaseClient \"couchBaseHost:[port]\"  \"bucketName\" \"sql query\" \n" +
+        "usage: couchbaseClient \"couchBaseHost:[port]\"  \"bucketName\" \"N1QL query\" \n" +
         "  required parameters:\n" +
         "    couchBaseHost[:port]   - name or IP address (port number is optional) of the Couchbase cluster / node\n" +
         "    bucketName             - name of the bucket on the Couchbase cluster / node\n" +
-        "    sql query              - Couchbase-compliant sql query surrounded by single or double quotes\n" +
+        "    N1QL query             - Couchbase-compliant N1QL query surrounded by single or double quotes\n" +
         "\n" +
         "  examples:\n" +
         "    couchbaseClient 192.168.99.100:8091 sapi \"select * from sapi limit 5\" \n" +
