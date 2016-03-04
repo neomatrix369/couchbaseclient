@@ -19,7 +19,7 @@ public class BetterCBQ {
 
   public static void main(String[] args)
       throws IOException, ExecutionException, InterruptedException {
-    if (args.length == 0) {
+    if (args.length < 3) {
       System.out.println(getUsageText());
       System.exit(-1);
     }
@@ -36,7 +36,16 @@ public class BetterCBQ {
         "    sql query              - Couchbase-compliant sql query surrounded by single or double quotes\n" +
         "\n" +
         "  examples:\n" +
-        "    couchbaseClient 192.168.99.100:8091 sapi \"select * from sapi limit 5\"";
+        "    couchbaseClient 192.168.99.100:8091 sapi \"select * from sapi limit 5\" \n" +
+        "\n" +
+        "  or \n" +
+        "\n" +
+        "    ./runCouchbaseClient.sh 172.31.29.132 Transport 'select * from Transport limit 5'\n" +
+        "\n" +
+        "  or \n" +
+        "\n" +
+        "./runCouchbaseClient.sh 172.31.29.132 Transport \"select * from Transport limit 5\" > queryResults.log\n" +
+        "\n";
   }
 
   public static void execute(String couchBaseHost, String bucketName, String queryString)
