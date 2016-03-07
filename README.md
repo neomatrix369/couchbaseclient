@@ -3,7 +3,7 @@ couchbaseclient
 
 A couchbase client that allows quick access to the couchbase cluster / node. Send SQL, receive results (JSON), handy for writing scripts and piping results into files.
 
-The couchbase client `cbq` does not accept N1QL queries as parameters and its not straight-forward to pipe the results of these queries run in `cbq`, this utility program attempts to resolve these two limitations.
+The couchbase client `cbq` does not accept N1QL queries as parameters or pipes and also its not straight-forward to pipe the results of these queries to a file or another device, this utility program attempts to help overcome these limitations.
 
 Build
 -----
@@ -19,6 +19,15 @@ The zip file contains a folder containing these three files:
 
 Usage of the utility program
 ----------------------------
+
+###Why would you use this tool ?
+- you do not want to manually ssh into Couchbase instances and type N1QL queries, across multiple environments
+- you do not have access to the the Couchbase web-console or any GUI and have work from command-line UI
+- you want to process the results of a N1QL query further
+- you want to write script(s) that send N1QL queries to Couchbase, that can be invoked from any application that supports scripting
+- you want to do any of the above in a repeated fashion or maybe even automate it via cron jobs or other tools (i.e. Jenkins, ansible, etc...)
+ 
+**Note:** one of the caveats is, the program should have access to the Couchbase Cluster/Node (via its private IP).
 
 ###How to build it ?
 
@@ -127,4 +136,4 @@ Note to fellow developers
 - Update the bash script
 
 
-###<i>Have fun using it and spread the love.</i>
+###<i>Have fun using it.</i>
