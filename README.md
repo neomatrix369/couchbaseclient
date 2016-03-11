@@ -43,7 +43,7 @@ Copy the zip artifact from the local machine to one of the jump boxes on AWS wit
 
 	unzip couchbaseClient.zip 
 	   
-	cd distribute
+	cd couchbaseClient
 	
 	./runCouchbaseClient.sh "couchBaseHost:[port]"  "bucketName" "N1QL query"
 	
