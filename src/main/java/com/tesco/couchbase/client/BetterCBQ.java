@@ -20,13 +20,13 @@ import com.couchbase.client.java.query.N1qlQueryRow;
 
 public class BetterCBQ {
 
-  @Parameter(required=true, names="--host", description = "name or IP address (port number is optional) of the Couchbase cluster / node")
+  @Parameter(required=true, names={"--host", "-h"}, description = "name or IP address (port number is optional) of the Couchbase cluster / node")
   private static String couchBaseHost;
 
-  @Parameter(required=true, names="--bucket", description = "name of the bucket on the Couchbase cluster / node")
+  @Parameter(required=true, names={"--bucket", "-b"}, description = "name of the bucket on the Couchbase cluster / node")
   private static String bucketName;
 
-  @Parameter(required=true, names="--query", description = "Couchbase-compliant N1QL query surrounded by single or double quotes")
+  @Parameter(required=true, names={"--query", "-q"}, description = "Couchbase-compliant N1QL query surrounded by single or double quotes")
   private static String n1qlQuery;
 
   public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
@@ -52,9 +52,9 @@ public class BetterCBQ {
     return
         "usage: couchbaseClient [required parameters] \n" +
         "  required parameters:\n" +
-        "    --host    - name or IP address (port number is optional) of the Couchbase cluster / node\n" +
-        "    --bucket  - name of the bucket on the Couchbase cluster / node\n" +
-        "    --query   - Couchbase-compliant N1QL query surrounded by single or double quotes\n" +
+        "    --host, -h    - name or IP address (port number is optional) of the Couchbase cluster / node\n" +
+        "    --bucket, -b  - name of the bucket on the Couchbase cluster / node\n" +
+        "    --query, -q   - Couchbase-compliant N1QL query surrounded by single or double quotes\n" +
         "\n" +
         "  examples:\n" +
         "    couchbaseClient --host 192.168.99.100:8091 --bucket sapi --query \"select * from sapi limit 5\" \n" +
@@ -65,7 +65,7 @@ public class BetterCBQ {
         "\n" +
         "  or \n" +
         "\n" +
-        "./runCouchbaseClient.sh --host 172.31.29.132 --bucket Transport --query  \"select * from Transport limit 5\" > queryResults.log\n" +
+        "./runCouchbaseClient.sh -h 172.31.29.132 -b Transport -q \"select * from Transport limit 5\" > queryResults.log\n" +
         "\n";
   }
 

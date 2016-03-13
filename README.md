@@ -45,12 +45,12 @@ Copy the zip artifact from the local machine to one of the jump boxes on AWS wit
 	   
 	cd couchbaseClient
 	
-	./runCouchbaseClient.sh "couchBaseHost:[port]"  "bucketName" "N1QL query"
+	./runCouchbaseClient.sh [required parameters]
 	
 	required parameters:
-		--host   - name or IP address (port number is optional) of the Couchbase cluster / node
-    	--bucket - name of the bucket on the Couchbase cluster / node
-    	--query  - Couchbase-compliant N1QL query surrounded by single or double quotes
+		--host, -h   - name or IP address (port number is optional) of the Couchbase cluster / node
+    	--bucket, -b - name of the bucket on the Couchbase cluster / node
+    	--query, -q  - Couchbase-compliant N1QL query surrounded by single or double quotes
 	
 	examples:
 		./runCouchbaseClient.sh --host 192.168.99.100:8091 --bucket sapi --query"select * from sapi limit 5"
