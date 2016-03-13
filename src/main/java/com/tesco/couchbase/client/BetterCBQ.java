@@ -2,9 +2,11 @@ package com.tesco.couchbase.client;
 
 import static com.couchbase.client.java.CouchbaseCluster.create;
 import static com.couchbase.client.java.query.N1qlQuery.simple;
+import static java.lang.System.*;
 import static java.util.Arrays.asList;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -17,14 +19,16 @@ import com.couchbase.client.java.query.N1qlQueryRow;
 
 public class BetterCBQ {
 
+  private static final String ERROR_MESSAGE_FORMAT = "Error: %s";
+
   public static void main(String[] args)
       throws IOException, ExecutionException, InterruptedException {
     if (args.length < 3) {
-      System.out.println(getUsageText());
-      System.exit(-1);
+      out.println(getUsageText());
+      exit(-1);
     }
 
-    BetterCBQ.execute(args[0], args[1], args[2]);
+    execute(args[0], args[1], args[2]);
   }
 
   private static String getUsageText() {
@@ -60,6 +64,9 @@ public class BetterCBQ {
       bucket = cluster.openBucket(bucketName);
       N1qlQueryResult queryResult = bucket.query(simple(queryString));
       errorOccurred = displayQueryResults(queryString, queryResult);
+    } catch (Exception ex) {
+      err.format(ERROR_MESSAGE_FORMAT, ex);
+      out.format(ERROR_MESSAGE_FORMAT, ex);
     } finally {
       if (bucket != null) {
         bucket.close();
@@ -68,7 +75,7 @@ public class BetterCBQ {
           cluster.disconnect();
       }
       if (errorOccurred) {
-          System.exit(-1);
+          exit(-1);
       }
     }
   }
@@ -77,15 +84,21 @@ public class BetterCBQ {
     boolean errorOccurred = false;
     if (queryResult.finalSuccess()) {
       for (N1qlQueryRow eachRow : queryResult.allRows()) {
-        System.out.println(convertToPrettyJsonString(eachRow));
+        out.println(convertToPrettyJsonString(eachRow));
       }
     } else {
       errorOccurred = true;
-      System.err.println("Query did not execute successfully, due to one or more errors.");
-      System.err.format("Requested query: '%s'%n", queryString);
-      System.err.println(queryResult.errors());
+      printErrorMessageTo(out, queryString, queryResult);
+      printErrorMessageTo(err, queryString, queryResult);
     }
     return errorOccurred;
+  }
+
+  private static void printErrorMessageTo(
+      PrintStream output, String queryString, N1qlQueryResult queryResult) {
+    output.println("Query did not execute successfully, due to one or more errors.");
+    output.format("Requested query: '%s'%n", queryString);
+    output.println(queryResult.errors());
   }
 
   private static String convertToPrettyJsonString(N1qlQueryRow eachRow) {
