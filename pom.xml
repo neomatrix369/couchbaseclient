@@ -56,5 +56,10 @@
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.48</version>
+        </dependency>
     </dependencies>
 </project>
