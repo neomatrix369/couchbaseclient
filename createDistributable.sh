@@ -13,6 +13,7 @@ echo "*** Copying necessary files for the zip artifact ***"
 cp $targetJarLocation couchbaseClient/couchbaseClient.jar
 cp src/main/resources/runCouchbaseClient.sh couchbaseClient/runCouchbaseClient.sh
 cp README.md couchbaseClient/README.md
+cp LICENSE couchbaseClient/LICENSE
 
 echo "*** Making the script file an executable ***"
 chmod u+x couchbaseClient/runCouchbaseClient.sh
