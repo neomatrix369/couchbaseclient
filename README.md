@@ -66,9 +66,9 @@ Copy the zip artifact from the local machine to one of the jump boxes on AWS wit
 
 ###Output and errors
    
-   All log and error output are written into the `couchbaseClient.log` file which gets created in the folder in which the program is run in.
+   All log and error output are written into the `couchbaseClient.log` file which gets created in the folder in which the program is run in. In addition in case of an error, a concise error message is also printed on the STDOUT.
     
-   Results of successful sql execution are printed on stdout and this can be piped into a file or sent elsewhere.
+   Results of successful sql execution are printed on the STDOUT and this can be piped into a file or sent elsewhere.
    
    Here is an example of a `couchbaseClient.log` file:
    
@@ -93,7 +93,7 @@ Copy the zip artifact from the local machine to one of the jump boxes on AWS wit
 		Mar 04, 2016 4:23:42 PM com.couchbase.client.core.env.DefaultCoreEnvironment$4 call
 		INFO: Shutdown Netty: success
    
-   Successful execution of the supplied SQL command results in a JSON like the below in the stdout:
+   Successful execution of the supplied SQL command results in a JSON like the below in the STDOUT:
    
 		{
 		  someEntity: {
