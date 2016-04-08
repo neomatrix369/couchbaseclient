@@ -68,8 +68,6 @@ public class BetterCBQ {
       bucket = cluster.openBucket(bucketName);
       N1qlQueryResult queryResult = bucket.query(simple(queryString));
       errorOccurred = displayQueryResults(queryString, queryResult);
-    } catch (Exception exception) {
-      throw exception;
     } finally {
       if (bucket != null) {
         bucket.close();
