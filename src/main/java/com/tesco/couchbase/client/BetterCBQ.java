@@ -2,11 +2,14 @@ package com.tesco.couchbase.client;
 
 import static com.couchbase.client.java.CouchbaseCluster.create;
 import static com.couchbase.client.java.query.N1qlQuery.simple;
+import static java.lang.String.format;
+import static java.lang.System.err;
+import static java.lang.System.exit;
+import static java.lang.System.out;
 import static java.util.Arrays.asList;
 
-import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.json.JSONObject;
 
@@ -20,6 +23,9 @@ import com.couchbase.client.java.query.N1qlQueryRow;
 
 public class BetterCBQ {
 
+  private static final String ERROR_MESSAGE_FORMAT = "Error occurred: %s. Check the log file for further details.";
+  private static final String COUCHBASE_CLIENT_PROGRAM_NAME = "couchbaseClient";
+
   @Parameter(required=true, names={"--host", "-h"}, description = "name or IP address (port number is optional) of the Couchbase cluster / node")
   private static String couchBaseHost;
 
@@ -29,48 +35,29 @@ public class BetterCBQ {
   @Parameter(required=true, names={"--query", "-q"}, description = "Couchbase-compliant N1QL query surrounded by single or double quotes")
   private static String n1qlQuery;
 
-  public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+  public static void main(String[] args) throws Exception {
     runBetterCBQ(args);
   }
 
-  private static void runBetterCBQ(String[] args)
-      throws IOException, ExecutionException, InterruptedException {
+  private static void runBetterCBQ(String[] args) throws Exception {
     final BetterCBQ betterCBQ = new BetterCBQ();
     JCommander jCommander;
     try {
       jCommander = new JCommander(betterCBQ, args);
-      jCommander.setProgramName("couchbaseClient");
+      jCommander.setProgramName(COUCHBASE_CLIENT_PROGRAM_NAME);
       betterCBQ.execute(couchBaseHost, bucketName, n1qlQuery);
     } catch (ParameterException parameterException) {
-      System.err.println(parameterException.getMessage());
-      System.out.println(betterCBQ.getUsageText());
+      err.println(parameterException.getMessage());
+      out.println(betterCBQ.getUsageText());
+      System.exit(-1);
+    } catch (Exception allOtherExceptions) {
+      err.println(format(ERROR_MESSAGE_FORMAT, allOtherExceptions.getMessage()));
+      out.println(format(ERROR_MESSAGE_FORMAT, allOtherExceptions.getMessage()));
       System.exit(-1);
     }
   }
 
-  private String getUsageText() {
-    return
-        "usage: couchbaseClient [required parameters] \n" +
-        "  required parameters:\n" +
-        "    --host, -h    - name or IP address (port number is optional) of the Couchbase cluster / node\n" +
-        "    --bucket, -b  - name of the bucket on the Couchbase cluster / node\n" +
-        "    --query, -q   - Couchbase-compliant N1QL query surrounded by single or double quotes\n" +
-        "\n" +
-        "  examples:\n" +
-        "    couchbaseClient --host 192.168.99.100:8091 --bucket sapi --query \"select * from sapi limit 5\" \n" +
-        "\n" +
-        "  or \n" +
-        "\n" +
-        "    ./runCouchbaseClient.sh --host 172.31.29.132 --bucket Transport --query 'select * from Transport limit 5'\n" +
-        "\n" +
-        "  or \n" +
-        "\n" +
-        "./runCouchbaseClient.sh -h 172.31.29.132 -b Transport -q \"select * from Transport limit 5\" > queryResults.log\n" +
-        "\n";
-  }
-
-  public void execute(String couchBaseHost, String bucketName, String queryString)
-      throws IOException, ExecutionException, InterruptedException {
+  public void execute(String couchBaseHost, String bucketName, String queryString) throws Exception {
     List<String> nodes = asList(couchBaseHost);
     Cluster cluster = null;
     Bucket bucket = null;
@@ -81,6 +68,8 @@ public class BetterCBQ {
       bucket = cluster.openBucket(bucketName);
       N1qlQueryResult queryResult = bucket.query(simple(queryString));
       errorOccurred = displayQueryResults(queryString, queryResult);
+    } catch (Exception exception) {
+      throw exception;
     } finally {
       if (bucket != null) {
         bucket.close();
@@ -89,7 +78,7 @@ public class BetterCBQ {
           cluster.disconnect();
       }
       if (errorOccurred) {
-          System.exit(-1);
+          exit(-1);
       }
     }
   }
@@ -98,20 +87,50 @@ public class BetterCBQ {
     boolean errorOccurred = false;
     if (queryResult.finalSuccess()) {
       for (N1qlQueryRow eachRow : queryResult.allRows()) {
-        System.out.println(convertToPrettyJsonString(eachRow));
+        out.println(convertToPrettyJsonString(eachRow));
       }
     } else {
       errorOccurred = true;
-      System.err.println("Query did not execute successfully, due to one or more errors.");
-      System.err.format("Requested query: '%s'%n", queryString);
-      System.err.println(queryResult.errors());
+      printErrorMessageTo(out, queryString, queryResult);
+      printErrorMessageTo(err, queryString, queryResult);
     }
     return errorOccurred;
   }
 
-  private String convertToPrettyJsonString(N1qlQueryRow eachRow) {
+  private static void printErrorMessageTo(
+      PrintStream output, String queryString, N1qlQueryResult queryResult) {
+    output.println("Query did not execute successfully, due to one or more errors.");
+    output.format("Requested query: '%s'%n", queryString);
+    output.println(queryResult.errors());
+    output.println("Check the log file for further details.");
+  }
+
+  private static String convertToPrettyJsonString(N1qlQueryRow eachRow) {
     String jsonAsString = eachRow.value().toString();
     JSONObject json = new JSONObject(jsonAsString);
     return json.toString(2);
+  }
+
+  private String getUsageText() {
+    return
+        format(
+        "usage: %s [required parameters] \n" +
+            "  required parameters:\n" +
+            "    --host, -h    - name or IP address (port number is optional) of the Couchbase cluster / node\n" +
+            "    --bucket, -b  - name of the bucket on the Couchbase cluster / node\n" +
+            "    --query, -q   - Couchbase-compliant N1QL query surrounded by single or double quotes\n" +
+            "\n" +
+            "  examples:\n" +
+            "    ./runCouchbaseClient.sh --host 192.168.99.100:8091 --bucket sapi --query \"select * from sapi limit 5\" \n" +
+            "\n" +
+            "  or \n" +
+            "\n" +
+            "    ./runCouchbaseClient.sh --host 172.31.29.132 --bucket Transport --query 'select * from Transport limit 5'\n" +
+            "\n" +
+            "  or \n" +
+            "\n" +
+            "./runCouchbaseClient.sh -h 172.31.29.132 -b Transport -q \"select * from Transport limit 5\" > queryResults.log\n" +
+            "\n",
+            COUCHBASE_CLIENT_PROGRAM_NAME, COUCHBASE_CLIENT_PROGRAM_NAME);
   }
 }
